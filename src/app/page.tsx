@@ -70,7 +70,7 @@ export default async function HomePage() {
       <NewDocForm createDoc={createDoc} />
 
       <ul className="space-y-2">
-        {docs.map((d) => (
+        {docs.map((d: { id: number; title: string; updatedAt: Date }) => (
           <li key={d.id} className="flex items-center gap-3">
             <span className="text-sm text-gray-400">#{d.id}</span>
             <span className="font-medium">{d.title}</span>
