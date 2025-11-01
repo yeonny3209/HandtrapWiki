@@ -1,65 +1,89 @@
-import Image from "next/image";
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import NewDocForm from "@/components/NewDocForm";
 
-export default function Home() {
+export const revalidate = 0;
+
+// ✅ 템플릿 사전
+const TEMPLATES: Record<string, (title: string) => string> = {
+  blank: () => "",
+  OnlyHandTrap: (title) => `
+    <h1>${title || "덱 이름"}</h1>
+    <p>하루 우라라: </p>
+    <p>도미나스 임펄스: </p>
+    <p>무효계(뵐포): </p>
+    <p>유령토끼: </p>
+    <p>도미나스 퍼지: </p>
+    <p>비스테드: </p>
+    <p>D.D. 크로우: </p>
+    <p>원시생명체 니비루: </p>
+  `,
+  HandTrapAndBuild: (title) => `
+    <h1>${title || "덱 이름"}</h1>
+    <h2>패 트랩</h2>
+    <p>하루 우라라: </p>
+    <p>도미나스 임펄스: </p>
+    <p>무효계(뵐포): </p>
+    <p>유령토끼: </p>
+    <p>도미나스 퍼지: </p>
+    <p>비스테드: </p>
+    <p>원시생명체 니비루: </p>
+    <p>D.D. 크로우: </p>
+    <h2>선공 견제</h2>
+    <p>소환 무효계: </p>
+    <p>파괴 견제: </p>
+    <p>몬스터 퍼미션: </p>
+    <p>비파괴 견제: </p>
+    <p>만능 퍼미션: </p>
+    <p>(소환 무효 x)카함 만능 퍼미션: </p>
+  `,
+};
+
+// ✅ 서버 액션: 문서 생성
+async function createDoc(formData: FormData) {
+  "use server";
+  const title = (formData.get("title") as string)?.trim() || "제목 없는 문서";
+  const tpl = (formData.get("template") as string) || "blank";
+
+  const contentFactory = TEMPLATES[tpl] ?? TEMPLATES.blank;
+  const html = contentFactory(title);
+
+  const doc = await prisma.document.create({
+    data: { title, content: html },
+  });
+
+  redirect(`/doc?id=${doc.id}`);
+}
+
+export default async function HomePage() {
+  const docs = await prisma.document.findMany({
+    select: { id: true, title: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main style={{ padding: 16 }}>
+      <h1 className="text-xl font-semibold mb-3">문서 목록</h1>
+
+      {/* ✅ 클라이언트 폼 (입력 잘 됨) */}
+      <NewDocForm createDoc={createDoc} />
+
+      <ul className="space-y-2">
+        {docs.map((d) => (
+          <li key={d.id} className="flex items-center gap-3">
+            <span className="text-sm text-gray-400">#{d.id}</span>
+            <span className="font-medium">{d.title}</span>
+            <Link
+              href={`/doc?id=${encodeURIComponent(String(d.id))}`}
+              className="text-blue-600 underline"
+              prefetch={false}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              열기
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }

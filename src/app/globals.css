@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* TipTap(ProseMirror) 기본 가독성 보정 */
+.ProseMirror { line-height: 1.7; }
+.ProseMirror h1 { font-size: 1.875rem; font-weight: 700; margin: 0.8em 0 0.5em; }
+.ProseMirror h2 { font-size: 1.5rem;   font-weight: 700; margin: 0.8em 0 0.5em; }
+.ProseMirror p  { margin: 0.5em 0; }
+.ProseMirror ul, .ProseMirror ol { padding-left: 1.25rem; margin: 0.5em 0; }
+.ProseMirror li { margin: 0.25em 0; }
