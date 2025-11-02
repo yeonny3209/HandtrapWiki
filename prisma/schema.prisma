@@ -1,10 +1,13 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-  provider = "sqlite"
+  provider = "sqlite"      // Supabase/Neon이면 postgresql
   url      = env("DATABASE_URL")
 }
+
 model Document {
   id        Int      @id @default(autoincrement())
   title     String

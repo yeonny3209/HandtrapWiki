@@ -1,8 +1,8 @@
 node_modules/
 .next/
+.vercel/
+.DS_Store
 .env
 *.log
-.DS_Store
 prisma/dev.db
 coverage/
-.vercel/
