@@ -66,7 +66,7 @@ export default async function HomePage() {
     <main style={{ padding: 16 }}>
       <h1 className="text-xl font-semibold mb-3">문서 목록</h1>
 
-      {/*  클라이언트 폼 (입력 잘 됨) */}
+      {/*  클라이언트 폼(입력 잘 됨) */}
       <NewDocForm createDoc={createDoc} />
 
       <ul className="space-y-2">
