@@ -38,7 +38,7 @@ export default async function DocPage({ searchParams }: {
     <main className="p-6">
       <div className="mb-4 flex items-center justify-between">
         <a href="/" className="text-blue-600 underline">← 목록으로</a>
-        {/* ✅ 여기! 삭제 버튼을 눈에 띄게 */}
+        {/*  여기! 삭제 버튼을 눈에 띄게 */}
         <DeleteDoc id={id} />
       </div>
 
